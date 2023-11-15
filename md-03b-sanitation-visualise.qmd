@@ -1,7 +1,7 @@
 ---
 title: "Data transformation with dplyr"
 subtitle: "And make a plot"
-author: ""
+author: "Jonathan Opoku Oti"
 format:
   html:
     embed-resources: true
@@ -47,7 +47,7 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 3.  How many variables are in the data set?
 
 ```{r}
-
+glimpse(sanitation)
 ```
 
 ## Task 2
@@ -55,7 +55,8 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 1.  Use the `count()` function with varname_short and varname_long to identify the definitions of the levels in these two variables.
 
 ```{r}
-
+sanitation |> 
+  count(varname_short, varname_long)
 ```
 
 ## Task 3
@@ -70,6 +71,10 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 
 ```{r}
 
+portugal <- sanitation |> 
+  filter(iso3 == "PRT",
+         year %in% c(2000, 2020),
+         varname_short != "san_sm")
 ```
 
 ## Task 4
@@ -78,6 +83,8 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 
 ```{r}
 
+portugal |> 
+  count(year)
 ```
 
 ## Task 5
@@ -101,20 +108,31 @@ geom_text(aes(label = round(percent, 1)),
 
 ```{r}
 
+portugal |> 
+  ggplot(mapping = aes(x = residence,
+                       y = percent,
+                       fill = varname_long)) +
+  geom_col() +
+  facet_wrap(~year) +
+  scale_fill_colorblind() +
+  geom_text(aes(label = round(percent, 1)), 
+          position = position_stack(vjust = 0.5),
+          size = 3,
+          color = "white") 
 ```
 
 ## Task 6
 
 If you haven't worked with JMP indicators before, the following questions will be challenging to answer.
 
-1.  Look at the plot that you created. What do you notice about the order of the bars / order of the legend?
-2.  What would you want to change?
-3.  Why did we remove "safely managed sanitation services" from the data set in Task 3?
+1.  Look at the plot that you created. What do you notice about the order of the bars / order of the legend? **the order was generated randomly with no relation to the order of the sanitation ladder. The same applies to the legend.**
+2.  What would you want to change? **I will change the order of the bars to represent the order of the sanitation ladder. I will change the colours as well to represent actual colours in the sanitation ladder.**
+3.  Why did we remove "safely managed sanitation services" from the data set in Task 3? **I believe it was removed because it is not of a concern compared to the rest of the indicators on the ladder. It is on top of the sanitation ladder and if no one achieves at all, it wont have any major impact on the populace.**
 
 ## Task 7
 
 1.  Run the code in the code chunk below.
-2.  What do you observe when you look at the code and plot?
+2.  What do you observe when you look at the code and plot? **The results shows the distribution of the percent coverage for individual indicators according to the type of residence for the year 2020.**
 
 ```{r}
 
